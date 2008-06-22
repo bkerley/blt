@@ -1,0 +1,5 @@
+(member? meat (list meat gravy))
+( start list
+\d+ number
+\D\S+ atom
+) end list
