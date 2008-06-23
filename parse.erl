@@ -65,7 +65,7 @@ phase2([Char|Remains], Atom, List) when is_integer(Char) ->
 	phase2(Remains, [Char|Atom], List).
 
 phase3([], List) ->
-	{sublist, lists:reverse(List)};
+	{list, lists:reverse(List)};
 
 phase3([Sample|Remains], _) when is_integer(Sample) ->
 	try_integerize([Sample|Remains]);
