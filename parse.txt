@@ -1,5 +1,15 @@
 (member? meat (list meat gravy))
-( start list
-\d+ number
-\D\S+ atom
-) end list
+
+phase 0:
+normalize whitespace to spaces
+
+phase 1:
+( start list - current state is blank list
+non-whitespace, non-parentheses something - add to current state
+) end list - return current state
+
+phase 2:
+turn successive non-whitespaces into atoms
+
+phase 3:
+turn all-digit atoms into numbers
