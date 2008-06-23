@@ -6,7 +6,7 @@ parse (Line) when is_binary(Line) ->
 	parse(binary_to_list(Line));
 parse (Line) when is_list(Line)->
 	Normalized = phase0(Line),
-	{ok, PhaseOne} = phase1(Normalized, []),
+	{ok, [PhaseOne]} = phase1(Normalized, []),
 	PhaseTwo = phase2(PhaseOne, [], []),
 	PhaseThree = phase3(PhaseTwo, []),
 	PhaseThree.
@@ -48,3 +48,21 @@ phase2([Sublist|Remains], Atom, List) when is_list(Sublist) ->
 
 phase2([Char|Remains], Atom, List) when is_integer(Char) ->
 	phase2(Remains, [Char|Atom], List).
+
+phase3([], List) ->
+	lists:reverse(List);
+
+phase3([Sample|Remains], _) when is_integer(Sample) ->
+	try_integerize([Sample|Remains]);
+
+phase3([Sample|Remains], List) when is_list(Sample) ->
+	Sublist = phase3(Sample, []),
+	phase3(Remains, [Sublist|List]).
+
+try_integerize(Candidate) ->
+	try
+		{number, list_to_integer(Candidate)}
+	catch
+		error:_ ->
+			{atom, Candidate}
+	end.
