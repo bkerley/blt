@@ -1,15 +1,8 @@
-(member? meat (list meat gravy))
+(member? meat (list meat gravy 69))
 
-phase 0:
-normalize whitespace to spaces
-
-phase 1:
-( start list - current state is blank list
-non-whitespace, non-parentheses something - add to current state
-) end list - return current state
-
-phase 2:
-turn successive non-whitespaces into atoms
-
-phase 3:
-turn all-digit atoms into numbers
+( - parse until matching )
+) - return this list
+alphasym+ - atom
+number+ - number
+number+alpha+ - atom
+whitespace - terminate atom or number, nothing if whitespace
