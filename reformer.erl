@@ -2,17 +2,14 @@
 -export ([reform/1]).
 
 reform(List) ->
-	lists:flatten(do_reform(List)).
+	lists:flatten(do_reform([List], [])).
 
-do_reform([]) -> [];
-do_reform({list, Sublist}) ->
-	ReformedSublist = do_reform(Sublist),
-	io_lib:format("( ~s)", [ReformedSublist]);
-do_reform({atom, Atom}) ->
-	io_lib:format("~s", [Atom]);
-do_reform({number, Number}) ->
-	io_lib:format("~w", [Number]);
-do_reform([First|Rest]) ->
-	ReformedFirst = do_reform(First),
-	ReformedRest = do_reform(Rest),
-	io_lib:format("~s ~s", [ReformedFirst, ReformedRest]).
+do_reform([], Acc) -> lists:reverse(Acc);
+do_reform([{list, Sublist}|Rest], Acc) ->
+	ReformedSublist = do_reform(Sublist, []),
+	NewAcc = [io_lib:format("( ~s)", [ReformedSublist])|Acc],
+	do_reform(Rest, NewAcc);
+do_reform([{atom, Atom}|Rest], Acc) ->
+	do_reform(Rest, [io_lib:format("~s ", [Atom])|Acc]);
+do_reform([{number, Number}|Rest], Acc) ->
+	do_reform(Rest, [io_lib:format("~w ", [Number])|Acc]).
