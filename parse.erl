@@ -4,8 +4,13 @@
 parse (Line) when is_binary(Line) ->
 	parse(binary_to_list(Line));
 parse (Line) when is_list(Line)->
-	[List] = recurparse(Line, [], []),
-	List.
+	try
+		[List] = recurparse(Line, [], []),
+		List
+	catch
+		error: {badmatch, _} ->
+			erlang:error({parse, closed_list, "Couldn't parse that many list closings"})
+	end.
 
 % recurparse (Remain, Context, Word, Accum)
 recurparse([], [], Accum) ->
@@ -16,8 +21,13 @@ recurparse([$(|Rest], [First|Cdr], Accum) ->
 	{Inner, Postparse} = recurparse(Rest, [], []),
 	recurparse(Postparse, [], [{list, Inner}, Word|Accum]);
 recurparse([$(|Rest], [], Accum) ->
-	{Inner, Postparse} = recurparse(Rest, [], []),
-	recurparse(Postparse, [], [{list, Inner}|Accum]);
+	try
+		{Inner, Postparse} = recurparse(Rest, [], []),
+		recurparse(Postparse, [], [{list, Inner}|Accum])
+	catch
+		error: {badmatch, _} ->
+			erlang:error({parse, open_list, "Failed to parse an unclosed list"})
+	end;
 
 recurparse([$)|Rest], [First|Cdr], Accum) ->
 	Word = try_integerize([First|Cdr]),
